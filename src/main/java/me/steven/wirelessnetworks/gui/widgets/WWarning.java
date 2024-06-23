@@ -14,7 +14,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import org.joml.Matrix4f;
 
-public class WWarning extends WWidget {
+public class WWarning extends WWidget
+{
 
     public int ticksRemaining;
     public Text text;
@@ -22,33 +23,40 @@ public class WWarning extends WWidget {
     public float bgWidth = 0;
 
     @Override
-    public void paint(DrawContext context, int x, int y, int mouseX, int mouseY) {
-
+    public void paint(DrawContext context, int x, int y, int mouseX, int mouseY)
+    {
         Screen currentScreen = MinecraftClient.getInstance().currentScreen;
-        x = (((HandledScreenAccessor)currentScreen).getX()) + parent.getWidth() / 2;
+        if (currentScreen == null || parent == null) return; // Evades NPE
+        x = (((HandledScreenAccessor) currentScreen).getX()) + parent.getWidth() / 2;
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
         int width = textRenderer.getWidth(text == null ? "" : text.getString()); // Evades NPE
-        if (ticksRemaining < 0){
+        if (ticksRemaining < 0)
+        {
             if (bgWidth > 0)
-            bgWidth -= width * 0.07;
-        } else if (bgWidth < width) {
-            bgWidth += width * 0.065;
+                bgWidth -= (float) width * 0.07f;
+        } else if (bgWidth < width)
+        {
+            bgWidth += (float) width * 0.065f;
             bgWidth = Math.min(width, bgWidth);
-        } else if (bgWidth > width) {
-            bgWidth -= width * 0.065;
+        } else if (bgWidth > width)
+        {
+            bgWidth -= (float) width * 0.065f;
             bgWidth = Math.max(width, bgWidth);
-        } else {
+        } else
+        {
             ticksRemaining--;
         }
 
-        if (bgWidth > 0) {
-            renderTooltipBackground(context.getMatrices(), x - (int)bgWidth / 2, y, (int)bgWidth, textRenderer.fontHeight);
+        if (bgWidth > 0)
+        {
+            renderTooltipBackground(context.getMatrices(), x - (int) bgWidth / 2, y, (int) bgWidth, textRenderer.fontHeight);
         }
 
     }
 
     @Environment(EnvType.CLIENT)
-    public void renderTooltipBackground(MatrixStack matrices, int x, int y, int width, int height) {
+    public void renderTooltipBackground(MatrixStack matrices, int x, int y, int width, int height)
+    {
         matrices.push();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
@@ -64,7 +72,7 @@ public class WWarning extends WWidget {
         fillGradient(matrix4f, bufferBuilder, x - 3, y - 3, x + width + 3, y - 3 + 1, 400, 1347420415, 1347420415);
         fillGradient(matrix4f, bufferBuilder, x - 3, y + height + 2, x + width + 3, y + height + 3, 400, 1344798847, 1344798847);
         RenderSystem.enableDepthTest();
-       // RenderSystem.disableTexture();
+        // RenderSystem.disableTexture();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
 
@@ -75,7 +83,8 @@ public class WWarning extends WWidget {
         matrices.translate(0.0D, 0.0D, 400.0D);
 
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-        if (bgWidth == textRenderer.getWidth(text == null ? "" : text.getString())) {
+        if (bgWidth == textRenderer.getWidth(text == null ? "" : text.getString()))
+        {
             textRenderer.draw(text.getString(), x, y, -1, true, matrix4f, immediate, TextRenderer.TextLayerType.NORMAL, 0, 15728880, false);
         }
         immediate.draw();
@@ -83,18 +92,19 @@ public class WWarning extends WWidget {
     }
 
     @Environment(EnvType.CLIENT)
-    protected static void fillGradient(Matrix4f matrix, BufferBuilder bufferBuilder, int xStart, int yStart, int xEnd, int yEnd, int z, int colorStart, int colorEnd) {
-        float f = (float)(colorStart >> 24 & 255) / 255.0F;
-        float g = (float)(colorStart >> 16 & 255) / 255.0F;
-        float h = (float)(colorStart >> 8 & 255) / 255.0F;
-        float i = (float)(colorStart & 255) / 255.0F;
-        float j = (float)(colorEnd >> 24 & 255) / 255.0F;
-        float k = (float)(colorEnd >> 16 & 255) / 255.0F;
-        float l = (float)(colorEnd >> 8 & 255) / 255.0F;
-        float m = (float)(colorEnd & 255) / 255.0F;
-        bufferBuilder.vertex(matrix, (float)xEnd, (float)yStart, (float)z).color(g, h, i, f).next();
-        bufferBuilder.vertex(matrix, (float)xStart, (float)yStart, (float)z).color(g, h, i, f).next();
-        bufferBuilder.vertex(matrix, (float)xStart, (float)yEnd, (float)z).color(k, l, m, j).next();
-        bufferBuilder.vertex(matrix, (float)xEnd, (float)yEnd, (float)z).color(k, l, m, j).next();
+    protected static void fillGradient(Matrix4f matrix, BufferBuilder bufferBuilder, int xStart, int yStart, int xEnd, int yEnd, int z, int colorStart, int colorEnd)
+    {
+        float f = (float) (colorStart >> 24 & 255) / 255.0F;
+        float g = (float) (colorStart >> 16 & 255) / 255.0F;
+        float h = (float) (colorStart >> 8 & 255) / 255.0F;
+        float i = (float) (colorStart & 255) / 255.0F;
+        float j = (float) (colorEnd >> 24 & 255) / 255.0F;
+        float k = (float) (colorEnd >> 16 & 255) / 255.0F;
+        float l = (float) (colorEnd >> 8 & 255) / 255.0F;
+        float m = (float) (colorEnd & 255) / 255.0F;
+        bufferBuilder.vertex(matrix, (float) xEnd, (float) yStart, (float) z).color(g, h, i, f).next();
+        bufferBuilder.vertex(matrix, (float) xStart, (float) yStart, (float) z).color(g, h, i, f).next();
+        bufferBuilder.vertex(matrix, (float) xStart, (float) yEnd, (float) z).color(k, l, m, j).next();
+        bufferBuilder.vertex(matrix, (float) xEnd, (float) yEnd, (float) z).color(k, l, m, j).next();
     }
 }
