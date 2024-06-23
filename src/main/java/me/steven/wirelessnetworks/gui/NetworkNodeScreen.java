@@ -32,7 +32,8 @@ import java.util.OptionalLong;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class NetworkNodeScreen extends SyncedGuiDescription {
+public class NetworkNodeScreen extends SyncedGuiDescription
+{
 
     private static final Identifier TEXTURE_ID = new Identifier(WirelessNetworks.MOD_ID, "textures/gui/select_network_screen.png");
 
@@ -42,31 +43,38 @@ public class NetworkNodeScreen extends SyncedGuiDescription {
     private static final Identifier INPUT_TEXTURE_ID = new Identifier(WirelessNetworks.MOD_ID, "textures/gui/icon_input.png");
     private static final Identifier OUTPUT_TEXTURE_ID = new Identifier(WirelessNetworks.MOD_ID, "textures/gui/icon_output.png");
 
-    @Environment(EnvType.CLIENT)
     public final WWarning warning = new WWarning();
 
-    public NetworkNodeScreen(BlockPos pos, boolean input, List<String> networks, int syncId, PlayerInventory playerInventory) {
+    public NetworkNodeScreen(BlockPos pos, boolean input, List<String> networks, int syncId, PlayerInventory playerInventory)
+    {
         super(WirelessNetworks.NODE_SCREEN_TYPE, syncId, playerInventory);
 
-        boolean[] i = { input };
+        boolean[] i = {input};
 
         AtomicInteger confirm = new AtomicInteger();
-        WNoBGButton deleteNetwork = new WNoBGButton() {
+        WNoBGButton deleteNetwork = new WNoBGButton()
+        {
             @Override
-            public void addTooltip(TooltipBuilder tooltip) {
-                if (confirm.get() == 1) {
+            public void addTooltip(TooltipBuilder tooltip)
+            {
+                if (confirm.get() == 1)
+                {
                     tooltip.add(Text.translatable("gui.wirelessnetworks.network.delete.confirm"));
-                } else {
+                } else
+                {
                     tooltip.add(Text.translatable("gui.wirelessnetworks.network.delete"));
                 }
             }
         };
 
-        WGridPanel panel = new WGridPanel() {
+        WGridPanel panel = new WGridPanel()
+        {
             @Override
-            public InputResult onMouseMove(int x, int y) {
+            public InputResult onMouseMove(int x, int y)
+            {
                 super.onMouseMove(x, y);
-                if (!deleteNetwork.isWithinBounds(x, y)) {
+                if (!deleteNetwork.isWithinBounds(x, y))
+                {
                     confirm.set(0);
                     return InputResult.PROCESSED;
                 }
@@ -84,18 +92,22 @@ public class NetworkNodeScreen extends SyncedGuiDescription {
         WLabel label = new WLabel(Text.translatable("gui.wirelessnetworks.network.select"), -1);
         BlockEntity blockEntity = world.getBlockEntity(pos);
         String[] selectedNetworkId = {null};
-        if (blockEntity instanceof NetworkNodeBlockEntity) {
+        if (blockEntity instanceof NetworkNodeBlockEntity)
+        {
             selectedNetworkId[0] = ((NetworkNodeBlockEntity) blockEntity).getNetworkId();
-            if (selectedNetworkId[0] != null && networks.contains(selectedNetworkId[0])) {
+            if (selectedNetworkId[0] != null && networks.contains(selectedNetworkId[0]))
+            {
                 label.setText(Text.literal(Utils.getDisplayId(selectedNetworkId[0])));
             }
         }
         panel.add(label, 0, 2);
         UUID uuid = playerInventory.player.getUuid();
-        WListPanel<String, WNetworkListEntry> list = new WConfigScreenListPanel(networks, () -> new WNetworkListEntry(uuid, world), (networkId, entry) -> {
+        WListPanel<String, WNetworkListEntry> list = new WConfigScreenListPanel(networks, () -> new WNetworkListEntry(uuid, world), (networkId, entry) ->
+        {
             entry.setId(networkId);
             entry.setText(Text.literal(Utils.getDisplayId(networkId)));
-            entry.setClickAction(() -> {
+            entry.setClickAction(() ->
+            {
                 label.setText(Text.literal(Utils.getDisplayId(networkId)));
                 PacketByteBuf buf = PacketByteBufs.create();
                 buf.writeBlockPos(pos);
@@ -113,13 +125,16 @@ public class NetworkNodeScreen extends SyncedGuiDescription {
         list.setLocation(0, 18 + 18 + 12);
         list.setSize(92, 119);
 
-        WNoBGButton createButton = new WNoBGButton() {
+        WNoBGButton createButton = new WNoBGButton()
+        {
             @Override
-            public void addTooltip(TooltipBuilder tooltip) {
+            public void addTooltip(TooltipBuilder tooltip)
+            {
                 tooltip.add(Text.translatable("gui.wirelessnetworks.network.create"));
             }
         };
-        createButton.setOnClick(() -> {
+        createButton.setOnClick(() ->
+        {
             PacketByteBuf buf = PacketByteBufs.create();
             buf.writeBlockPos(pos);
             buf.writeBoolean(true);
@@ -130,14 +145,18 @@ public class NetworkNodeScreen extends SyncedGuiDescription {
         createButton.setSize(8, 8);
         createButton.setIcon(ADD_TEXTURE_ID);
 
-        WNoBGButton configureButton = new WNoBGButton() {
+        WNoBGButton configureButton = new WNoBGButton()
+        {
             @Override
-            public void addTooltip(TooltipBuilder tooltip) {
+            public void addTooltip(TooltipBuilder tooltip)
+            {
                 tooltip.add(Text.translatable("gui.wirelessnetworks.network.edit"));
             }
         };
-        configureButton.setOnClick(() -> {
-            if (selectedNetworkId[0] != null) {
+        configureButton.setOnClick(() ->
+        {
+            if (selectedNetworkId[0] != null)
+            {
                 PacketByteBuf buf = PacketByteBufs.create();
                 buf.writeBlockPos(pos);
                 buf.writeBoolean(false);
@@ -150,11 +169,15 @@ public class NetworkNodeScreen extends SyncedGuiDescription {
         configureButton.setSize(8, 8);
         configureButton.setIcon(EDIT_TEXTURE_ID);
 
-        deleteNetwork.setOnClick(() -> {
-            if (selectedNetworkId[0] != null) {
-                if (confirm.get() == 0) {
+        deleteNetwork.setOnClick(() ->
+        {
+            if (selectedNetworkId[0] != null)
+            {
+                if (confirm.get() == 0)
+                {
                     confirm.set(1);
-                } else if (confirm.get() == 1 && Screen.hasShiftDown()) {
+                } else if (confirm.get() == 1 && Screen.hasShiftDown())
+                {
                     PacketByteBuf buf = PacketByteBufs.create();
                     buf.writeString(selectedNetworkId[0]);
                     buf.writeBlockPos(pos);
@@ -170,14 +193,17 @@ public class NetworkNodeScreen extends SyncedGuiDescription {
         deleteNetwork.setIcon(DELETE_TEXTURE_ID);
 
 
-        WNoBGButton modeBtn = new WNoBGButton() {
+        WNoBGButton modeBtn = new WNoBGButton()
+        {
             @Override
-            public void addTooltip(TooltipBuilder tooltip) {
+            public void addTooltip(TooltipBuilder tooltip)
+            {
                 tooltip.add(Text.translatable("gui.wirelessnetworks.network.input." + i[0]));
             }
         };
         modeBtn.setLabel(Text.translatable("gui.wirelessnetworks.network.input." + input));
-        modeBtn.setOnClick(() -> {
+        modeBtn.setOnClick(() ->
+        {
             i[0] = !i[0];
             PacketByteBuf buf = PacketByteBufs.create();
             buf.writeBlockPos(pos);
@@ -193,16 +219,18 @@ public class NetworkNodeScreen extends SyncedGuiDescription {
         panel.validate(this);
     }
 
-    private Identifier getTexture(boolean input) {
+    private Identifier getTexture(boolean input)
+    {
         if (input) return INPUT_TEXTURE_ID;
         else return OUTPUT_TEXTURE_ID;
     }
 
 
     @Override
-    public void addPainters() {
+    public void addPainters()
+    {
         super.addPainters();
         this.rootPanel.setBackgroundPainter((matrices, x, y, panel) ->
-                ScreenDrawing.texturedRect(matrices, x-8, y-8 + 18, 108 + 16, 164 + 16, TEXTURE_ID, -1));
+                ScreenDrawing.texturedRect(matrices, x - 8, y - 8 + 18, 108 + 16, 164 + 16, TEXTURE_ID, -1));
     }
 }
